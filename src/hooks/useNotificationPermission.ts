@@ -32,5 +32,17 @@ export function useNotificationPermission() {
     }
   }
 
-  return { status, loading, error, requestPermission, refresh }
+  const sendTestNotification = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      await notificationService.showTestNotification()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al enviar la notificación.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { status, loading, error, clearError: () => setError(null), requestPermission, sendTestNotification, refresh }
 }

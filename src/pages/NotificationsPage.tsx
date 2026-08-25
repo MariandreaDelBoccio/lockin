@@ -33,7 +33,8 @@ function getStatusDisplay(status: string): { icon: string; label: string; descri
 }
 
 export function NotificationsPage() {
-  const { status, loading, error, requestPermission } = useNotificationPermission()
+  const { status, loading, error, clearError, requestPermission, sendTestNotification } =
+    useNotificationPermission()
   const display = getStatusDisplay(status)
 
   return (
@@ -46,7 +47,7 @@ export function NotificationsPage() {
         <p className="notification-status__desc">{display.description}</p>
       </div>
 
-      {error && <ErrorBanner message={error} />}
+      {error && <ErrorBanner message={error} onDismiss={clearError} />}
 
       {status !== 'unsupported' && status !== 'granted' && (
         <BigButton onClick={requestPermission} disabled={loading}>
@@ -54,10 +55,16 @@ export function NotificationsPage() {
         </BigButton>
       )}
 
+      {status === 'granted' && (
+        <BigButton variant="secondary" onClick={sendTestNotification} disabled={loading}>
+          {loading ? 'Enviando…' : 'Enviar notificación de prueba'}
+        </BigButton>
+      )}
+
       <div className="info-box">
         <p>
-          Las notificaciones push completas requerirán un backend en una versión futura.
-          Por ahora solo comprobamos que la PWA puede solicitar permisos correctamente.
+          Al activar permisos se envía una notificación de prueba. Las alertas automáticas
+          de fichaje requerirán backend en una versión futura.
         </p>
       </div>
     </div>
