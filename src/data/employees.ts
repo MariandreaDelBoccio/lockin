@@ -1,11 +1,22 @@
 import type { Employee } from '../types/attendance'
 
 export const DEMO_EMPLOYEES: Employee[] = [
-  { id: 'ana', name: 'Ana' },
-  { id: 'carlos', name: 'Carlos' },
-  { id: 'maria', name: 'María' },
-  { id: 'juan', name: 'Juan' },
-  { id: 'pedro', name: 'Pedro' },
+  { id: 'mariandrea', name: 'Mariandrea' },
+  { id: 'macarena', name: 'Macarena' },
+  { id: 'ivo', name: 'Ivo' },
+  { id: 'javier', name: 'Javier' },
+  { id: 'laura', name: 'Laura' },
+  { id: 'janet', name: 'Janet' },
+  { id: 'meli', name: 'Meli' },
+  { id: 'moira', name: 'Moira' },
+  { id: 'judit', name: 'Judit' },
+  { id: 'elene', name: 'Elene' },
+  { id: 'anna', name: 'Anna' },
+  { id: 'lydia', name: 'Lydia' },
+  { id: 'sarah', name: 'Sarah' },
+  { id: 'natalia', name: 'Natalia' },
+  { id: 'jaione', name: 'Jaione' },
+  { id: 'chus', name: 'Chus' },
 ]
 
 export function getEmployeeById(id: string): Employee | undefined {
