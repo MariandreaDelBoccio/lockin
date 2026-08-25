@@ -1,9 +1,12 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useCurrentUser } from '../hooks/useCurrentUser'
+import { useMonthlyReview } from '../hooks/useMonthlyReview'
 
 export function Layout() {
-  const { clearUser } = useCurrentUser()
+  const { user, clearUser, isAdmin } = useCurrentUser()
   const navigate = useNavigate()
+
+  useMonthlyReview(user?.id)
 
   const handleChangeUser = () => {
     clearUser()
@@ -22,15 +25,17 @@ export function Layout() {
         <NavLink to="/historial" className="bottom-nav__link">
           Historial
         </NavLink>
-        <NavLink to="/admin" className="bottom-nav__link">
-          Admin
-        </NavLink>
+        {isAdmin && (
+          <NavLink to="/admin" className="bottom-nav__link">
+            Admin
+          </NavLink>
+        )}
         <NavLink to="/notificaciones" className="bottom-nav__link">
           Avisos
         </NavLink>
       </nav>
       <button type="button" className="change-user-link" onClick={handleChangeUser}>
-        Cambiar usuario
+        Cerrar sesión
       </button>
     </div>
   )

@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { Employee } from '../types/attendance'
+import { authenticateEmployee } from '../data/employees'
+import type { AuthUser } from '../types/attendance'
 import { getStorageItem, removeStorageItem, setStorageItem, STORAGE_KEYS } from '../utils/storage'
 
 export function useCurrentUser() {
-  const [user, setUser] = useState<Employee | null>(() =>
-    getStorageItem<Employee>(STORAGE_KEYS.currentUser),
+  const [user, setUser] = useState<AuthUser | null>(() =>
+    getStorageItem<AuthUser>(STORAGE_KEYS.currentUser),
   )
 
-  const selectUser = useCallback((employee: Employee) => {
-    setStorageItem(STORAGE_KEYS.currentUser, employee)
-    setUser(employee)
+  const login = useCallback((employeeId: string, pin: string): boolean => {
+    const authUser = authenticateEmployee(employeeId, pin)
+    if (!authUser) return false
+    setStorageItem(STORAGE_KEYS.currentUser, authUser)
+    setUser(authUser)
+    return true
   }, [])
 
   const clearUser = useCallback(() => {
@@ -20,12 +24,12 @@ export function useCurrentUser() {
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEYS.currentUser) {
-        setUser(getStorageItem<Employee>(STORAGE_KEYS.currentUser))
+        setUser(getStorageItem<AuthUser>(STORAGE_KEYS.currentUser))
       }
     }
     window.addEventListener('storage', handleStorage)
     return () => window.removeEventListener('storage', handleStorage)
   }, [])
 
-  return { user, selectUser, clearUser }
+  return { user, login, clearUser, isAdmin: user?.role === 'admin' }
 }

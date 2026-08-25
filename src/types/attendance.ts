@@ -1,6 +1,20 @@
+export type UserRole = 'admin' | 'employee'
+
 export interface Employee {
   id: string
   name: string
+  pin: string
+  role: UserRole
+  /** Horas de contrato por día laborable (lunes–viernes) */
+  contractHoursPerDay: number
+}
+
+/** Usuario autenticado (sin PIN en sesión) */
+export interface AuthUser {
+  id: string
+  name: string
+  role: UserRole
+  contractHoursPerDay: number
 }
 
 export interface AttendanceRecord {
@@ -23,3 +37,19 @@ export interface AttendanceError {
 export type AttendanceResult<T> =
   | { success: true; data: T }
   | { success: false; error: AttendanceError }
+
+export interface MonthlyReviewIssue {
+  type: 'missing_day' | 'incomplete' | 'hours_mismatch'
+  date?: string
+  message: string
+}
+
+export interface MonthlyReview {
+  year: number
+  month: number
+  employeeId: string
+  expectedHours: number
+  workedHours: number
+  workingDays: number
+  issues: MonthlyReviewIssue[]
+}

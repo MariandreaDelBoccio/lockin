@@ -6,6 +6,7 @@ export interface NotificationService {
   getPermissionStatus(): NotificationPermissionStatus
   requestPermission(): Promise<NotificationPermission>
   showTestNotification(): Promise<void>
+  showNotification(title: string, body: string, tag: string): Promise<void>
   subscribeToPush(): Promise<PushSubscription | null>
   wasPermissionRequested(): boolean
   markPermissionRequested(): void
@@ -30,6 +31,14 @@ class NotificationServiceImpl implements NotificationService {
   }
 
   async showTestNotification(): Promise<void> {
+    await this.showNotification(
+      'Fichaje — prueba',
+      'Si ves esto, las notificaciones funcionan correctamente.',
+      'fichaje-test',
+    )
+  }
+
+  async showNotification(title: string, body: string, tag: string): Promise<void> {
     if (!('Notification' in window)) {
       throw new Error('Este navegador no soporta notificaciones.')
     }
@@ -37,12 +46,11 @@ class NotificationServiceImpl implements NotificationService {
       throw new Error('Primero debes activar las notificaciones.')
     }
 
-    const title = 'Fichaje — prueba'
     const options: NotificationOptions = {
-      body: 'Si ves esto, las notificaciones funcionan correctamente.',
+      body,
       icon: `${import.meta.env.BASE_URL}icons/icon-192.png`,
       badge: `${import.meta.env.BASE_URL}icons/icon-192.png`,
-      tag: 'fichaje-test',
+      tag,
     }
 
     if ('serviceWorker' in navigator) {

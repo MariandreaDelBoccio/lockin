@@ -1,6 +1,9 @@
 import { BigButton } from '../components/BigButton'
 import { ErrorBanner } from '../components/ErrorBanner'
+import { useCurrentUser } from '../hooks/useCurrentUser'
 import { useNotificationPermission } from '../hooks/useNotificationPermission'
+import { monthlyReviewService } from '../services/monthlyReviewService'
+import { formatMonthYear } from '../utils/date'
 
 function getStatusDisplay(status: string): { icon: string; label: string; description: string } {
   switch (status) {
@@ -8,7 +11,7 @@ function getStatusDisplay(status: string): { icon: string; label: string; descri
       return {
         icon: '🔔',
         label: 'Notificaciones activadas',
-        description: 'El navegador tiene permiso para enviar notificaciones.',
+        description: 'Recibirás avisos al final de cada mes si hay incidencias.',
       }
     case 'denied':
       return {
@@ -21,7 +24,7 @@ function getStatusDisplay(status: string): { icon: string; label: string; descri
       return {
         icon: '🔕',
         label: 'Notificaciones desactivadas',
-        description: 'Aún no has activado las notificaciones.',
+        description: 'Actívalas para recibir la revisión mensual de fichajes.',
       }
     default:
       return {
@@ -33,9 +36,14 @@ function getStatusDisplay(status: string): { icon: string; label: string; descri
 }
 
 export function NotificationsPage() {
+  const { user } = useCurrentUser()
   const { status, loading, error, clearError, requestPermission, sendTestNotification } =
     useNotificationPermission()
   const display = getStatusDisplay(status)
+
+  const { year, month } = monthlyReviewService.getPreviousMonth()
+  const review = user ? monthlyReviewService.buildMonthlyReview(user.id, year, month) : null
+  const monthLabel = formatMonthYear(year, month)
 
   return (
     <div className="page notifications-page">
@@ -61,10 +69,39 @@ export function NotificationsPage() {
         </BigButton>
       )}
 
+      {review && (
+        <div className="monthly-review">
+          <h2 className="monthly-review__title">Revisión de {monthLabel}</h2>
+          <div className="monthly-review__stats">
+            <div>
+              <span className="monthly-review__label">Horas trabajadas</span>
+              <strong>{review.workedHours.toFixed(1)}h</strong>
+            </div>
+            <div>
+              <span className="monthly-review__label">Horas contrato</span>
+              <strong>{review.expectedHours.toFixed(1)}h</strong>
+            </div>
+            <div>
+              <span className="monthly-review__label">Días laborables</span>
+              <strong>{review.workingDays}</strong>
+            </div>
+          </div>
+          {review.issues.length === 0 ? (
+            <p className="monthly-review__ok">Todo correcto en {monthLabel}.</p>
+          ) : (
+            <ul className="monthly-review__issues">
+              {review.issues.map((issue, i) => (
+                <li key={i}>{issue.message}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
       <div className="info-box">
         <p>
-          Al activar permisos se envía una notificación de prueba. Las alertas automáticas
-          de fichaje requerirán backend en una versión futura.
+          Al final de cada mes (y primeros días del siguiente) se comprueba si faltan fichajes
+          o las horas no coinciden con tu contrato ({user?.contractHoursPerDay ?? 8}h/día).
         </p>
       </div>
     </div>

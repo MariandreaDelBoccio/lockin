@@ -2,6 +2,7 @@ const STORAGE_KEYS = {
   currentUser: 'fichaje_current_user',
   attendanceRecords: 'attendance_records',
   notificationPermissionRequested: 'notification_permission_requested',
+  lastMonthlyReviewNotified: 'fichaje_last_monthly_review_notified',
 } as const
 
 export { STORAGE_KEYS }

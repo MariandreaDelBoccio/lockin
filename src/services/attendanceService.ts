@@ -28,7 +28,7 @@ export class AttendanceService {
     })
   }
 
-  checkIn(employeeId: string): AttendanceResult<AttendanceRecord> {
+  checkIn(employeeId: string, timestamp?: string): AttendanceResult<AttendanceRecord> {
     const today = getTodayDateString()
     const existing = this.repository.getByEmployeeAndDate(employeeId, today)
 
@@ -42,7 +42,16 @@ export class AttendanceService {
       }
     }
 
-    const now = new Date().toISOString()
+    const now = timestamp ?? new Date().toISOString()
+    if (new Date(now).getTime() > Date.now()) {
+      return {
+        success: false,
+        error: {
+          code: 'FUTURE_TIME',
+          message: 'No puedes fichar con una hora futura.',
+        },
+      }
+    }
     const record: AttendanceRecord = existing
       ? { ...existing, checkIn: now, updatedAt: now }
       : {
@@ -64,7 +73,7 @@ export class AttendanceService {
     return { success: true, data: record }
   }
 
-  checkOut(employeeId: string): AttendanceResult<AttendanceRecord> {
+  checkOut(employeeId: string, timestamp?: string): AttendanceResult<AttendanceRecord> {
     const today = getTodayDateString()
     const existing = this.repository.getByEmployeeAndDate(employeeId, today)
 
@@ -88,7 +97,25 @@ export class AttendanceService {
       }
     }
 
-    const now = new Date().toISOString()
+    const now = timestamp ?? new Date().toISOString()
+    if (new Date(now).getTime() > Date.now()) {
+      return {
+        success: false,
+        error: {
+          code: 'FUTURE_TIME',
+          message: 'No puedes fichar con una hora futura.',
+        },
+      }
+    }
+    if (new Date(now).getTime() <= new Date(existing.checkIn).getTime()) {
+      return {
+        success: false,
+        error: {
+          code: 'CHECKOUT_BEFORE_CHECKIN',
+          message: 'La salida debe ser posterior a la entrada.',
+        },
+      }
+    }
     const record: AttendanceRecord = { ...existing, checkOut: now, updatedAt: now }
     this.repository.update(record)
 

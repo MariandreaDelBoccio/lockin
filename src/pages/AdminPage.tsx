@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BigButton } from '../components/BigButton'
 import { DEMO_EMPLOYEES, getEmployeeName } from '../data/employees'
+import { useCurrentUser } from '../hooks/useCurrentUser'
 import { attendanceService } from '../services/attendanceService'
 import type { AttendanceRecord } from '../types/attendance'
 import { downloadCsv } from '../utils/csv'
@@ -15,6 +16,7 @@ function getStatusLabel(record: AttendanceRecord): string {
 }
 
 export function AdminPage() {
+  const { isAdmin } = useCurrentUser()
   const [employeeFilter, setEmployeeFilter] = useState('')
   const [dateFilter, setDateFilter] = useState('')
   const [alertTab, setAlertTab] = useState<AlertTab>('all')
@@ -34,7 +36,6 @@ export function AdminPage() {
     return true
   })
 
-  // refresh on tab focus
   useEffect(() => {
     const onFocus = () => refresh()
     window.addEventListener('focus', onFocus)
@@ -42,6 +43,7 @@ export function AdminPage() {
   }, [])
 
   const handleExport = () => {
+    if (!isAdmin) return
     downloadCsv(filteredRecords.length > 0 ? filteredRecords : allRecords)
   }
 
@@ -166,11 +168,17 @@ export function AdminPage() {
         </div>
       )}
 
-      <div className="admin-actions">
-        <BigButton variant="secondary" onClick={handleExport}>
-          Exportar CSV
-        </BigButton>
-      </div>
+      {isAdmin ? (
+        <div className="admin-actions">
+          <BigButton variant="secondary" onClick={handleExport}>
+            Exportar CSV
+          </BigButton>
+        </div>
+      ) : (
+        <p className="info-box admin-restricted">
+          Solo los administradores pueden exportar CSV.
+        </p>
+      )}
     </div>
   )
 }

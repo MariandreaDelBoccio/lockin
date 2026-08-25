@@ -54,6 +54,50 @@ export function getRecordStatus(
   return 'completed'
 }
 
+export function getCurrentTimeString(): string {
+  const now = new Date()
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
+/** Combina una fecha YYYY-MM-DD con una hora HH:mm en ISO local */
+export function combineDateAndTime(dateStr: string, timeStr: string): string {
+  const [year, month, day] = dateStr.split('-').map(Number)
+  const [hours, minutes] = timeStr.split(':').map(Number)
+  const date = new Date(year, month - 1, day, hours, minutes, 0, 0)
+  return date.toISOString()
+}
+
+export function getWorkedHours(checkIn: string, checkOut: string): number {
+  const diffMs = Math.max(0, new Date(checkOut).getTime() - new Date(checkIn).getTime())
+  return diffMs / 3600000
+}
+
+export function getMonthWeekdayDates(year: number, month: number, upToDate?: string): string[] {
+  const dates: string[] = []
+  const lastDay = new Date(year, month, 0).getDate()
+  const cutoff = upToDate ?? `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`
+
+  for (let day = 1; day <= lastDay; day++) {
+    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+    if (dateStr > cutoff) break
+    const d = new Date(year, month - 1, day)
+    const weekday = d.getDay()
+    if (weekday >= 1 && weekday <= 5) {
+      dates.push(dateStr)
+    }
+  }
+
+  return dates
+}
+
+export function formatMonthYear(year: number, month: number): string {
+  const date = new Date(year, month - 1, 1)
+  const formatted = date.toLocaleDateString(DATE_LOCALE, { month: 'long', year: 'numeric' })
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1)
+}
+
 export function getWeekdayDates(daysBack: number): string[] {
   const dates: string[] = []
   const today = new Date()

@@ -274,8 +274,7 @@ a {
   bottom: 0;
   left: 0;
   right: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
   height: calc(var(--nav-height) + var(--safe-bottom));
   padding-bottom: var(--safe-bottom);
   background: var(--color-surface);
@@ -284,6 +283,7 @@ a {
 }
 
 .bottom-nav__link {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -463,4 +463,128 @@ a {
   .page {
     padding-top: 2rem;
   }
+}
+
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(15 23 42 / 40%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 200;
+}
+
+.login-form {
+  width: 100%;
+  max-width: 360px;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 15%);
+}
+
+.login-form__title {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+}
+
+.login-form__subtitle {
+  margin: 0 0 1.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.login-form__error {
+  margin: 0.75rem 0 0;
+  color: var(--color-error-text);
+  font-size: 0.85rem;
+}
+
+.login-form__actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.login-form__cancel,
+.login-form__submit {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+}
+
+.login-form__cancel {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+}
+
+.login-form__submit {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.time-picker {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.time-picker__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.monthly-review {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.monthly-review__title {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.monthly-review__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.monthly-review__label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.monthly-review__ok {
+  margin: 0;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.monthly-review__issues {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--color-error-text);
+}
+
+.admin-restricted {
+  margin-top: 1.5rem;
 }
